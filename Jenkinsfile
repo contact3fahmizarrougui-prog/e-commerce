@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        PROD_HOST = 'IP_VM_PROD'        // à remplacer plus tard
+        PROD_HOST = '192.168.66.133'        // à remplacer plus tard
         PROD_USER = 'ubuntu'            // nom d’utilisateur sur ta VM_Prod
         APP_NAME = 'ecommerce'
     }
