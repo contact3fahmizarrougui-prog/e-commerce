@@ -64,50 +64,51 @@
       </plugins>
     </pluginManagement>
     <!-- Analyse des dépendances vulnérables (OWASP Dependency-Check) -->
-<plugin>
-    <groupId>org.owasp</groupId>
-    <artifactId>dependency-check-maven</artifactId>
-    <version>11.1.1</version>
-    <configuration>
-        <failBuildOnCVSS>7</failBuildOnCVSS>
-        <format>HTML</format>
-    </configuration>
-    <executions>
-        <execution>
-            <goals>
-                <goal>check</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
+<<plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>11.1.1</version>
+            <configuration>
+                <failBuildOnCVSS>7</failBuildOnCVSS>
+                <format>HTML</format>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
 
 <!-- Analyse statique du code (SpotBugs) -->
 <plugin>
-    <groupId>com.github.spotbugs</groupId>
-    <artifactId>spotbugs-maven-plugin</artifactId>
-    <version>4.9.7.0</version>
-    <dependencies>
-        <dependency>
             <groupId>com.github.spotbugs</groupId>
-            <artifactId>spotbugs</artifactId>
-            <version>4.9.7</version>
-        </dependency>
-    </dependencies>
-    <configuration>
-        <effort>Max</effort>
-        <threshold>Low</threshold>
-        <xmlOutput>true</xmlOutput>
-        <outputFile>target/spotbugsXml.xml</outputFile>
-    </configuration>
-    <executions>
-        <execution>
-            <phase>verify</phase>
-            <goals>
-                <goal>check</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>4.9.7.0</version>
+            <dependencies>
+                <dependency>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs</artifactId>
+                    <version>4.9.7</version>
+                </dependency>
+            </dependencies>
+            <configuration>
+                <effort>Max</effort>
+                <threshold>Low</threshold>
+                <xmlOutput>true</xmlOutput>
+                <outputFile>target/spotbugsXml.xml</outputFile>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
 
   </build>
 </project>
