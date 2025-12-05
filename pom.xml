@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.example</groupId>
@@ -10,7 +11,6 @@
   <packaging>war</packaging>
 
   <name>e-commerce Maven Webapp</name>
-  <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
   <properties>
@@ -30,7 +30,10 @@
 
   <build>
     <finalName>e-commerce</finalName>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+
+    <!-- Plugins par défaut de Maven -->
+    <pluginManagement>
+      <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
@@ -63,52 +66,56 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <!-- Analyse des dépendances vulnérables (OWASP Dependency-Check) -->
-<plugin>
-            <groupId>org.owasp</groupId>
-            <artifactId>dependency-check-maven</artifactId>
-            <version>11.1.1</version>
-            <configuration>
-                <failBuildOnCVSS>7</failBuildOnCVSS>
-                <format>HTML</format>
-            </configuration>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>check</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
 
+    <!-- 👉 ICI : nos plugins SAST dans <plugins> -->
+    <plugins>
 
-<!-- Analyse statique du code (SpotBugs) -->
-<plugin>
+      <!-- Analyse des dépendances vulnérables (OWASP Dependency-Check) -->
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>11.1.1</version>
+        <configuration>
+          <failBuildOnCVSS>7</failBuildOnCVSS>
+          <format>HTML</format>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Analyse statique du code (SpotBugs) -->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.9.7.0</version>
+        <dependencies>
+          <dependency>
             <groupId>com.github.spotbugs</groupId>
-            <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>4.9.7.0</version>
-            <dependencies>
-                <dependency>
-                    <groupId>com.github.spotbugs</groupId>
-                    <artifactId>spotbugs</artifactId>
-                    <version>4.9.7</version>
-                </dependency>
-            </dependencies>
-            <configuration>
-                <effort>Max</effort>
-                <threshold>Low</threshold>
-                <xmlOutput>true</xmlOutput>
-                <outputFile>target/spotbugsXml.xml</outputFile>
-            </configuration>
-            <executions>
-                <execution>
-                    <phase>verify</phase>
-                    <goals>
-                        <goal>check</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
+            <artifactId>spotbugs</artifactId>
+            <version>4.9.7</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+          <xmlOutput>true</xmlOutput>
+          <outputFile>target/spotbugsXml.xml</outputFile>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
+    </plugins>
   </build>
 </project>
