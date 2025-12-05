@@ -7,12 +7,13 @@ pipeline {
     }
 
     environment {
-        PROD_HOST = '192.168.66.133'        // à remplacer plus tard
-        PROD_USER = 'ubuntu'            // nom d’utilisateur sur ta VM_Prod
-        APP_NAME = 'ecommerce'
+        PROD_HOST = '192.168.66.133'      // Adresse IP de la VM_Prod
+        PROD_USER = 'vmprod'              // Nom d'utilisateur correct sur la VM_Prod
+        APP_NAME = 'e-commerce'           // Nom de ton application (WAR)
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 echo '🔹 Récupération du code source...'
@@ -34,6 +35,7 @@ pipeline {
             }
             post {
                 always {
+                    echo '📊 Sauvegarde des rapports SAST...'
                     archiveArtifacts artifacts: 'target/dependency-check-report.html, target/spotbugsXml.xml', fingerprint: true
                 }
             }
@@ -42,10 +44,11 @@ pipeline {
         stage('Package') {
             steps {
                 echo '📦 Création du package WAR...'
-                sh 'mvn package -DskipTests=true'
+                sh 'mvn package -DskipTests=true -Dmaven.clean.failOnError=false'
             }
             post {
                 success {
+                    echo '💾 Sauvegarde du fichier WAR généré...'
                     archiveArtifacts artifacts: 'target/*.war', fingerprint: true
                 }
             }
@@ -55,9 +58,16 @@ pipeline {
             steps {
                 echo '🚀 Déploiement sur la VM_Prod...'
                 sh '''
-                WAR_FILE=$(ls target/*.war | head -n 1)
-                scp -o StrictHostKeyChecking=no $WAR_FILE ${PROD_USER}@${PROD_HOST}:/tmp/app.war
-                ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} 'sudo mv /tmp/app.war /var/lib/tomcat9/webapps/${APP_NAME}.war && sudo systemctl restart tomcat9'
+                    WAR_FILE=$(ls target/*.war | head -n 1)
+                    echo "Transfert du fichier $WAR_FILE vers ${PROD_USER}@${PROD_HOST}..."
+                    scp -o StrictHostKeyChecking=no $WAR_FILE ${PROD_USER}@${PROD_HOST}:/tmp/app.war
+
+                    echo "Déploiement sur Tomcat en cours..."
+                    ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_HOST} '
+                        sudo mv /tmp/app.war /var/lib/tomcat9/webapps/${APP_NAME}.war &&
+                        sudo chown tomcat:tomcat /var/lib/tomcat9/webapps/${APP_NAME}.war &&
+                        sudo systemctl restart tomcat9
+                    '
                 '''
             }
         }
@@ -66,13 +76,14 @@ pipeline {
             steps {
                 echo '🧪 Scan DAST avec OWASP ZAP...'
                 sh '''
-                docker run --rm --network=host -v $PWD:/zap/wrk/:rw -t owasp/zap2docker-stable \
-                    zap-baseline.py -t http://${PROD_HOST}:8080/${APP_NAME} -r zap_report.html
+                    docker run --rm --network=host -v $PWD:/zap/wrk/:rw -t owasp/zap2docker-stable \
+                        zap-baseline.py -t http://${PROD_HOST}:8080/${APP_NAME}/ -r zap-report.html
                 '''
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'zap_report.html', fingerprint: true
+                    echo '📊 Sauvegarde du rapport ZAP...'
+                    archiveArtifacts artifacts: 'zap-report.html', fingerprint: true
                 }
             }
         }
@@ -90,4 +101,3 @@ pipeline {
         }
     }
 }
-
