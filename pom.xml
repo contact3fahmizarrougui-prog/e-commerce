@@ -64,7 +64,7 @@
       </plugins>
     </pluginManagement>
     <!-- Analyse des dépendances vulnérables (OWASP Dependency-Check) -->
-<<plugin>
+<plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
             <version>11.1.1</version>
